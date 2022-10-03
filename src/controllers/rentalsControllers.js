@@ -96,4 +96,36 @@ async function deleteRental (req,res) {
     }
 }
 
-export { readRentals, createRental, deleteRental };
+async function returnRental (req,res) {
+    const id = req.params.id;
+    const returnDate = dayjs().format('YYYY-MM-DD');
+
+    try {
+        const checkrental = await connection.query(`SELECT rentals.*, games."pricePerDay" FROM rentals
+                                                    JOIN games ON rentals."gameId"=games.id
+                                                    WHERE rentals.id=$1 LIMIT 1;`, [id]);
+        if(!checkrental.rows.length) {
+            return res.sendStatus(404);
+        }
+        if(checkrental.rows[0].returnDate !== null) {
+            return res.status(400).send('rental already returned');
+        }
+
+        const { daysRented, pricePerDay, rentDate } = checkrental.rows[0];
+        
+        let delayFee = pricePerDay * (Math.abs(dayjs(rentDate).diff(returnDate, 'day')) - daysRented);
+        if(delayFee < 0) {
+            delayFee = 0;
+        }
+
+        await connection.query(`UPDATE rentals
+                                SET "returnDate"=$1, "delayFee"=$2
+                                WHERE id=$3;`,
+                                [returnDate, delayFee, id]);
+    } catch(error) {
+        console.log(error);
+        res.sendStatus(500);
+    }
+}
+
+export { readRentals, createRental, deleteRental, returnRental };
