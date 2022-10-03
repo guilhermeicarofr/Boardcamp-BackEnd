@@ -30,7 +30,7 @@ async function readOneCustomer (req,res) {
         if(!customers.rows.length) {
             return res.sendStatus(404);
         }
-        res.send(customers.rows);        
+        res.send(customers.rows[0]);        
     } catch (error) {
         console.log(error);
         res.sendStatus(500);
