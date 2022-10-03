@@ -1,11 +1,11 @@
 import { Router } from 'express';
 
-import { readRentals } from '../controllers/rentalsControllers.js';
-//import { validateGame } from '../middlewares/gamesMiddlewares.js';
+import { readRentals, createRental } from '../controllers/rentalsControllers.js';
+import { validateRental } from '../middlewares/rentalsMiddlewares.js';
 
 const rentalsRouter = Router();
 
 rentalsRouter.get('/rentals', readRentals);
-//gamesRouter.post('/games', validateGame, createGame);
+rentalsRouter.post('/rentals', validateRental, createRental);
 
 export { rentalsRouter };

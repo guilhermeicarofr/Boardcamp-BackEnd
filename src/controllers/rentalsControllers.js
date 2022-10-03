@@ -1,3 +1,7 @@
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc.js';
+dayjs.extend(utc);
+
 import connection from '../database/database.js';
 
 async function readRentals (req,res) {
@@ -53,15 +57,23 @@ async function readRentals (req,res) {
     }
 }
 
+async function createRental (req,res) {
+    const { customerId, gameId, daysRented } = res.locals.rental;
+    const rentDate = dayjs().format('YYYY-MM-DD');
+    const returnDate = null;
+    const delayFee = null;
 
+    try {
+        const game = await connection.query(`SELECT * FROM games WHERE id=$1 LIMIT 1;`, [gameId]);
+        const originalPrice = daysRented * game.rows[0].pricePerDay;
 
+        await connection.query(`INSERT INTO rentals ("customerId", "gameId", "daysRented", "rentDate", "returnDate", "delayFee", "originalPrice")
+                                VALUES ($1,$2,$3,$4,$5,$6,$7);`, [customerId, gameId, daysRented, rentDate, returnDate, delayFee, originalPrice]);
+        res.sendStatus(201);        
+    } catch(error) {
+        console.log(error);
+        res.sendStatus(500);
+    }
+}
 
-
-
-
-
-
-
-
-
-export { readRentals };
+export { readRentals, createRental };
