@@ -76,4 +76,24 @@ async function createRental (req,res) {
     }
 }
 
-export { readRentals, createRental };
+async function deleteRental (req,res) {
+    const id = req.params.id;
+
+    try {
+        const checkrental = await connection.query('SELECT * FROM rentals WHERE rentals.id=$1 LIMIT 1;', [id]);
+        if(!checkrental.rows.length) {
+            return res.sendStatus(404);
+        }
+        if(checkrental.rows[0].returnDate === null) {
+            return res.status(400).send('rental still open');
+        }
+
+        await connection.query('DELETE FROM rentals WHERE id=$1;', [id]);
+        res.sendStatus(200);
+    } catch(error) {
+        console.log(error);
+        res.sendStatus(500);
+    }
+}
+
+export { readRentals, createRental, deleteRental };
