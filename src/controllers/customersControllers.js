@@ -38,16 +38,16 @@ async function readOneCustomer (req,res) {
 }
 
 async function createCustomer (req,res) {
-    // const { name, image, stockTotal, categoryId, pricePerDay } = res.locals.game;
+    const { name, phone, cpf, birthday  } = res.locals.customer;
 
-    // try {
-    //     await connection.query(`INSERT INTO games (name, image, "stockTotal", "categoryId", "pricePerDay")
-    //                             VALUES ($1,$2,$3,$4,$5);`, [name, image, stockTotal, categoryId, pricePerDay]);
-    //     res.sendStatus(201);        
-    // } catch(error) {
-    //     console.log(error);
-    //     res.sendStatus(500);
-    // }
+    try {
+        await connection.query(`INSERT INTO customers (name, phone, cpf, birthday)
+                                VALUES ($1,$2,$3,$4);`, [name, phone, cpf, birthday]);
+        res.sendStatus(201);        
+    } catch(error) {
+        console.log(error);
+        res.sendStatus(500);
+    }
 }
 
 
