@@ -4,6 +4,9 @@ import { customerSchema } from '../schemas/customersSchema.js';
 
 async function validateCustomer (req,res,next) {
     const customer = req.body;
+    const id = req.params?.id;
+
+    console.log(req);
 
     const validation = customerSchema.validate(customer, { abortEarly: false });
     if(validation.error) {
@@ -14,7 +17,11 @@ async function validateCustomer (req,res,next) {
     try {
         const checkcpf = await connection.query('SELECT * FROM customers WHERE cpf=$1;', [customer.cpf]);
         if(checkcpf.rows.length) {
-            return res.sendStatus(409);
+            if(req.method==='PUT' && id && checkcpf.rows.filter(item => item.id == id).length) {
+                console.log('update');
+            } else {
+                return res.sendStatus(409);
+            }
         }
 
         res.locals.customer = customer;

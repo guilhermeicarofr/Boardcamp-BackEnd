@@ -50,17 +50,25 @@ async function createCustomer (req,res) {
     }
 }
 
+async function updateCustomer (req,res) {
+    const { id } = req.params;
+    const { name, phone, cpf, birthday } = res.locals.customer;
 
+    try {
+        const checkid = await connection.query(`SELECT * FROM customers WHERE id=$1 LIMIT 1;`, [id]);
+        if(!checkid.rows.length) {
+            return res.status(400).send('customer not found');
+        }
 
+        await connection.query(`UPDATE customers
+                                SET name=$1, phone=$2, cpf=$3, birthday=$4
+                                WHERE id=$5;`,
+                                [name, phone, cpf, birthday, id]);
+        res.sendStatus(200);        
+    } catch(error) {
+        console.log(error);
+        res.sendStatus(500);
+    }
+}
 
-
-
-
-
-
-
-
-
-
-
-export { readCustomers, readOneCustomer, createCustomer };
+export { readCustomers, readOneCustomer, createCustomer, updateCustomer };
