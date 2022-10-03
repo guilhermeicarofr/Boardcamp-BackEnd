@@ -5,7 +5,7 @@ async function readCustomers (req,res) {
 
     try {
         if(search.cpf) {
-            //check SQL INJECTION
+            //refactor to use ($1',[variable]) ?
             const customers = await connection.query(`SELECT *
                                                 FROM customers
                                                 WHERE customers.cpf

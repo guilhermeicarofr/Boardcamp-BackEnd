@@ -5,7 +5,7 @@ async function readGames (req,res) {
 
     try {
         if(search.name) {
-            //check SQL INJECTION
+            //refactor to use ($1',[variable]) ?
             const games = await connection.query(`SELECT games.*, categories.name AS "categoryName" 
                                                 FROM games JOIN categories 
                                                 ON games."categoryId"=categories.id
