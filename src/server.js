@@ -3,6 +3,7 @@ import cors from 'cors';
 
 import { categoriesRouter } from './routers/categoriesRouter.js';
 import { gamesRouter } from './routers/gamesRouter.js';
+import { customersRouter } from './routers/customerRouter.js';
 
 const server = express();
 server.use(express.json());
@@ -10,7 +11,7 @@ server.use(cors());
 
 server.use(categoriesRouter);
 server.use(gamesRouter);
-
+server.use(customersRouter);
 
 
 
