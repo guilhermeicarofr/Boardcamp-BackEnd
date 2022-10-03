@@ -1,23 +1,27 @@
 import connection from '../database/database.js';
 
 async function readGames (req,res) {
-
     const search = req.query;
 
-    if(search.name) {
-        //check SQL INJECTION
+    try {
+        if(search.name) {
+            //check SQL INJECTION
+            const games = await connection.query(`SELECT games.*, categories.name AS "categoryName" 
+                                                FROM games JOIN categories 
+                                                ON games."categoryId"=categories.id
+                                                WHERE games.name
+                                                LIKE '${search.name}%';`);
+            return res.send(games.rows);
+        }
+    
         const games = await connection.query(`SELECT games.*, categories.name AS "categoryName" 
                                             FROM games JOIN categories 
-                                            ON games."categoryId"=categories.id
-                                            WHERE games.name
-                                            LIKE '${search.name}%';`);
-        return res.send(games.rows);
+                                            ON games."categoryId"=categories.id;`);
+        res.send(games.rows);        
+    } catch (error) {
+        console.log(error);
+        res.sendStatus(500);
     }
-
-    const games = await connection.query(`SELECT games.*, categories.name AS "categoryName" 
-                                        FROM games JOIN categories 
-                                        ON games."categoryId"=categories.id;`);
-    res.send(games.rows);
 }
 
 async function createGame (req,res) {
